@@ -7,7 +7,7 @@ An intelligent, schema-aware test data generation tool that utilizes Large Langu
 - **Schema Introspection & Parsing:** Automatically parses standard SQL DDL (Data Definition Language) to understand table structures, data types, and constraints.
 - **Natural Language Schema Generation:** Provide a plain English description of your database (e.g., "An e-commerce app with users and orders") and the tool will automatically generate the corresponding SQL DDL for you.
 - **Topological Sorting:** Resolves foreign key dependencies to ensure tables are populated in the correct relational order (e.g., creating `users` before `posts`).
-- **LLM-Powered Data Mapping:** Uses Anthropic (Claude) to intelligently map database columns to appropriate semantic data generators (via Faker), ensuring contextually accurate test data (e.g., mapping `email_addr` to real-looking email addresses).
+- **LLM-Powered Data Mapping:** Uses Groq client (Llama 3.1 70b) to intelligently map database columns to appropriate semantic data generators (via Faker), ensuring contextually accurate test data (e.g., mapping `email_addr` to real-looking email addresses).
 - **Multiple Export Formats:** Generates both combined `seed_all.sql` files and individual table `.csv` data dumps.
 
 ## Architecture
