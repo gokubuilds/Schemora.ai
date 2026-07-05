@@ -1,0 +1,21 @@
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+.DS_Store
+# Python
+__pycache__/
+*.py[cod]
+.demo/
+
+
+
+
+# Node
+node_modules/
+
+# App-specific
+mapper_cache.json
+

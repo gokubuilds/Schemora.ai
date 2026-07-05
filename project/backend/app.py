@@ -1,0 +1,121 @@
+import os
+import io
+import csv
+import re
+from fastapi import FastAPI, HTTPException
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel, Field
+from dotenv import load_dotenv
+import sqlglot
+import groq
+
+from backend.parser.ddl_parser import parse_ddl
+from backend.mapper.llm_mapper import get_or_build_column_map
+from backend.generator.data_generator import build_order, generate_data
+from backend.generator.nlp_to_ddl import generate_ddl_from_nlp
+from backend.exporter.exporter import to_sql_inserts
+
+load_dotenv()
+
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+class GenerateRequest(BaseModel):
+    ddl: str = Field(..., min_length=1, max_length=50_000)
+    rows: int = Field(default=20, ge=1, le=10_000)
+
+class GenerateDDLRequest(BaseModel):
+    prompt: str = Field(..., min_length=1, max_length=10_000)
+
+
+@app.post("/api/generate")
+def api_generate(req: GenerateRequest):
+    try:
+        schema = parse_ddl(req.ddl)
+        column_map, tokens_used = get_or_build_column_map(schema)
+        topo_order = build_order(schema)
+        generated = generate_data(schema, column_map, topo_order, num_rows=req.rows)
+        
+        results = {
+            "tables": [],
+            "seed_all": "",
+            "tokens_used": tokens_used
+        }
+        
+        combined_sql = []
+        
+        for table_name in topo_order:
+            rows = generated.get(table_name, [])
+            if not rows:
+                continue
+            
+            # SQL
+            sql_str = to_sql_inserts(table_name, rows)
+            combined_sql.append(sql_str)
+            combined_sql.append("")
+            
+            # CSV
+            output = io.StringIO()
+            writer = csv.DictWriter(output, fieldnames=rows[0].keys())
+            writer.writeheader()
+            for row in rows:
+                writer.writerow({k: ("" if v is None else v) for k, v in row.items()})
+            csv_str = output.getvalue()
+            
+            results["tables"].append({
+                "name": table_name,
+                "sql": sql_str,
+                "csv": csv_str,
+                "data": rows
+            })
+            
+        results["seed_all"] = "\n".join(combined_sql)
+        return results
+    except sqlglot.errors.ParseError as e:
+        error_msg = re.sub(r'\x1b\[[0-9;]*m', '', str(e))
+        raise HTTPException(status_code=400, detail=f"Bad DDL: {error_msg}")
+    except groq.AuthenticationError as e:
+        raise HTTPException(status_code=500, detail=f"Groq Authentication Error: {str(e)}")
+    except groq.APIConnectionError as e:
+        raise HTTPException(status_code=502, detail=f"Groq API Connection Error: {str(e)}")
+    except groq.APIStatusError as e:
+        raise HTTPException(status_code=502, detail=f"Groq API Status Error: {str(e)}")
+    except groq.GroqError as e:
+        raise HTTPException(status_code=500, detail=f"Groq Error: {str(e)}")
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=f"Bad Request: {str(e)}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
+
+@app.post("/api/generate-ddl")
+def api_generate_ddl(req: GenerateDDLRequest):
+    try:
+        ddl, tokens_used = generate_ddl_from_nlp(req.prompt)
+        return {
+            "ddl": ddl,
+            "tokens_used": tokens_used
+        }
+    except groq.AuthenticationError as e:
+        raise HTTPException(status_code=500, detail=f"Groq Authentication Error: {str(e)}")
+    except groq.APIConnectionError as e:
+        raise HTTPException(status_code=502, detail=f"Groq API Connection Error: {str(e)}")
+    except groq.APIStatusError as e:
+        raise HTTPException(status_code=502, detail=f"Groq API Status Error: {str(e)}")
+    except groq.GroqError as e:
+        raise HTTPException(status_code=500, detail=f"Groq Error: {str(e)}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
+
+
+# Create frontend dir if it doesn't exist
+os.makedirs("frontend", exist_ok=True)
+app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")

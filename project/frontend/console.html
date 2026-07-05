@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schemora.ai - Console Playground</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=8">
+</head>
+
+<body class="console-body">
+
+    <div class="console-layout">
+        <!-- Top Bar -->
+        <header class="console-header">
+            <a href="index.html" class="console-logo">
+                <div class="logo-symbol"></div>
+                <span>Schemora.ai</span>
+            </a>
+            <div class="console-header-actions">
+                <button type="button" id="theme-toggle" aria-label="Toggle Theme" title="Toggle Theme">
+                    <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                    <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                </button>
+                <a href="index.html" class="btn-exit">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    <span>Exit</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="console-workspace">
+            <!-- Left inputs panel -->
+            <section class="console-pane console-left">
+                <div class="console-tabs" id="input-tabs">
+                    <button class="console-tab active" id="tab-ddl">DDL SCHEMA</button>
+                    <button class="console-tab" id="tab-nlp">PROMPT (NLP)</button>
+                </div>
+                
+                <form id="generate-form">
+                    <div class="console-group" id="ddl-section">
+                        <textarea id="ddl-input" placeholder="CREATE TABLE users (&#10;  id INT PRIMARY KEY,&#10;  name VARCHAR(100),&#10;  email VARCHAR(255)&#10;);"></textarea>
+                    </div>
+
+                    <div class="console-group" id="nlp-section" style="display: none;">
+                        <textarea id="nlp-input" placeholder="Describe your database schema in plain English...&#10;e.g., An e-commerce platform with users, orders, and products."></textarea>
+                        <button type="button" id="generate-ddl-btn" class="secondary-btn" style="margin-top: 10px; width: auto; align-self: flex-start;">
+                            <span class="btn-text" id="nlp-btn-text">GENERATE DDL</span>
+                            <span class="spinner hidden" id="nlp-spinner"></span>
+                        </button>
+                    </div>
+
+                    <div class="console-footer-row">
+                        <div class="console-row-count">
+                            <label for="rows-input">Rows / Table</label>
+                            <input type="number" id="rows-input" value="10" min="1" max="1000">
+                        </div>
+                        <button type="submit" id="generate-btn" class="btn-generate">
+                            <span class="btn-text">GENERATE</span>
+                            <span class="spinner hidden"></span>
+                        </button>
+                    </div>
+                </form>
+
+                <div id="error-message" class="error hidden"></div>
+
+            </section>
+
+            <!-- Right results panel -->
+            <section class="console-pane console-right">
+                <div class="output-card">
+                    <div class="output-header">
+                        <span class="output-title">OUTPUT VIEW</span>
+                        <div class="output-tabs-container" id="tabs">
+                            <!-- Populated dynamically -->
+                        </div>
+                        <div class="token-counter" id="token-counter" title="Total LLM Tokens Used" style="margin-top: 0; margin-left: auto; flex-shrink: 0;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                class="lucide lucide-coins">
+                                <circle cx="8" cy="8" r="6" />
+                                <path d="M18.09 10.37A6 6 0 1 1 10.34 18" />
+                                <path d="M7 6h1v4" />
+                                <path d="m16.71 13.88.7.71-2.82 2.82" />
+                            </svg>
+                            <span><span id="token-count-value">0</span> tokens</span>
+                        </div>
+                    </div>
+                    <div class="output-body" id="results-content">
+                        <div class="output-empty">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                            <p>Configure your schema DDL and click Generate to see synthetic rows here.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Script managing API actions -->
+    <script src="console.js?v=1"></script>
+</body>
+
+</html>
