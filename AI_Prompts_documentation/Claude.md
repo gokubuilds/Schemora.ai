@@ -13,7 +13,7 @@ A CLI tool that reads a SQL DDL file, uses an LLM to understand column semantics
 | Language | Python 3.11+ | Best ecosystem for this task |
 | DDL Parsing | `sqlglot` | Robust, dialect-aware SQL parser |
 | Data Generation | `Faker` | Rich provider library |
-| LLM Integration | `anthropic` SDK (claude-sonnet-4-20250514) | Column semantic mapping |
+| LLM Integration | Groq client (llama-3.3-70b-versatile) | Column semantic mapping |
 | Graph/Topology | `graphlib` (stdlib) | Topological sort for FK ordering |
 | Output | `csv` (stdlib) + string templating | SQL inserts + CSV export |
 | CLI | `argparse` or `click` | Simple entry point |
