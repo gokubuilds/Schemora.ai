@@ -16,13 +16,13 @@ An intelligent, schema-aware test data generation tool that utilizes Large Langu
 
 - **Backend:** Python 3, FastAPI, Click (for CLI)
 - **Frontend:** Vanilla HTML5, CSS3, JavaScript
-- **AI Integration:** Anthropic API (Claude) for Schema Generation and Data Mapping
+- **AI Integration:** Groq API ( Llama 3.1 70b ) for Schema Generation and Data Mapping
 - **Data Generation:** Python Faker
 
 ## Prerequisites
 
 - Python 3.9 or higher
-- A valid Anthropic API Key
+- A valid Groq API Key
 
 ## Installation
 
