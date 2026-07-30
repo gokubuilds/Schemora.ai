@@ -78,7 +78,7 @@ python -m backend.main --ddl schemas/sample.sql --rows 50 --output ./output
 **CLI Arguments:**
 - `--ddl` (Required): Path to your SQL DDL file containing `CREATE TABLE` statements.
 - `--rows` (Optional): Number of rows to generate per table. Default is 20 (Maximum 10,000 for safety).
-- `--output` (Optional): Directory where the generated `.sql` and `.csv` files will be saved. Default is `./output`.
+- `--output` (Optional): Directory where the generated `.sql`  and `.csv` files will be saved. Default is  `./output`.
 
 ## Project Structure
 
