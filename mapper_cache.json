@@ -1,0 +1,164 @@
+{
+  "books:e6e26781e5e40925d2e7230ff3f8947a93391da82ccb537f548e371606d6e0c8": {
+    "bookid": "faker.unique.random_int(min=1, max=99999)",
+    "bookname": "faker.catch_phrase()",
+    "bookprice": "faker.random_int(min=1, max=1000) / 100.0"
+  },
+  "users:37689ede30137d5af7b28fcab0edb70363423d1c942a3beec8a226b9e8c6a66d": {
+    "userid": "faker.unique.random_int(min=1, max=99999)",
+    "username": "faker.user_name()",
+    "bookid": "FK:books.bookid"
+  },
+  "user:bdebca91426b8834a2e8393ee629c5996d8cc4549bfa780adf456706f0a7f831": {
+    "userid": "faker.unique.random_int(min=1, max=99999)",
+    "username": "faker.user_name()",
+    "userphonenumber": "faker.phone_number()"
+  },
+  "purchase:20482182bb5792029f32111eec8fcd1f6955fe7f5f48389fe31be2a8a7f897ac": {
+    "purchaseid": "faker.unique.random_int(min=1, max=99999)",
+    "userid": "FK:user.userid",
+    "purchaseitem": "faker.random_element(elements=('Product A', 'Product B', 'Product C', 'Product D', 'Product E'))"
+  },
+  "department:5c0b9adfeae55a6349da3e5f56d8dbbffd96913ba862d2e7d2fbbd9d7e7947a3": {
+    "id": "faker.unique.random_int(min=1, max=99999)",
+    "name": "faker.company()",
+    "description": "faker.paragraph()",
+    "created_at": "faker.date_time_this_year().isoformat()",
+    "updated_at": "faker.date_time_this_year().isoformat()"
+  },
+  "department:25afcb00dc95086af73e71140b1da5f7f32e6083d58ad4b2af452ad4b10da530": {
+    "departmentid": "faker.unique.random_int(min=1, max=99999)",
+    "userid": "faker.random_int(min=1, max=99999)",
+    "username": "faker.user_name()",
+    "usernumber": "faker.random_int(min=1, max=99999)"
+  },
+  "department:55c5f9e2202c408546e7196533de5f2a7e6304f2b42b09e928fdf17b2eaa112a": {
+    "departmentid": "faker.unique.random_int(min=1, max=99999)",
+    "userid": "faker.random_int(min=1, max=99999)",
+    "username": "faker.user_name()",
+    "userphonenumber": "faker.phone_number()"
+  },
+  "school:7c5124fcb063f4e7e18acd2bdc7243678c9cb57d17fd0570e1eb2024136a3059": {
+    "id": "faker.unique.random_int(min=1, max=99999)",
+    "schoolname": "faker.company()",
+    "schoolcontactmail": "faker.email()"
+  },
+  "users:ff313712a6bf59f5419987c9e3db97c3fc580d9b44cc3e2a025371bf87e69221": {
+    "user_id": "faker.unique.random_int(min=1, max=99999)",
+    "user_name": "faker.user_name()"
+  },
+  "department:84cb60d2c76067165e6f11c4f0f7d10db59f63882c4cd85f1a277ccb9edaf2bd": {
+    "dept_name": "faker.company()"
+  },
+  "staff:82f1d17d8a9291bfce4c88307b405401d99b403035d78a31f1619a0f526b8d12": {
+    "staffid": "faker.unique.random_int(min=1, max=99999)",
+    "staff_name": "faker.name()",
+    "staff_depts": "faker.bs()"
+  },
+  "student:18d14ead18899617770a600f9d4e58ac3b5abbc718d56f85c69f8a5c63525c29": {
+    "studentid": "faker.unique.random_int(min=1, max=99999)",
+    "student_name": "faker.name()",
+    "student_dept": "FK:staff.staff_depts"
+  },
+  "users:dce03619998e8b73eb2d458e33f48a4d761cecbe37ffe884f42d95c4ce784400": {
+    "id": "faker.unique.random_int(min=1, max=99999)",
+    "u_nm": "faker.user_name()",
+    "email_addr": "faker.email()",
+    "created_at": "faker.date_time_this_year().isoformat()"
+  },
+  "posts:2bda7a8d5e43224fa8f9434a6c9b660c90873ddc86865d5ad869888e98780d6c": {
+    "id": "faker.unique.random_int(min=1, max=99999)",
+    "user_id": "FK:users.id",
+    "title": "faker.catch_phrase()",
+    "body": "faker.text()",
+    "views": "faker.random_int(min=0, max=10000)",
+    "published": "faker.random_element(elements=(True, False))"
+  },
+  "comments:10c3cf99bd6cf3aad2f65bfd61e3ce2feada0517271f3679ddbd21b4b6467593": {
+    "id": "faker.unique.random_int(min=1, max=99999)",
+    "post_id": "FK:posts.id",
+    "user_id": "FK:users.id",
+    "content": "faker.text()"
+  },
+  "repositories:f6d1b716f92f54f21b623db7c2ab3b4336f489b1dc42ed566d90be59b2fe0a8d": {
+    "repository_id": "faker.unique.random_int(min=1, max=99999)",
+    "repository_name": "faker.company()",
+    "owner": "faker.name()"
+  },
+  "builds:8abea64e4c1999c5fc41ec3140bb51332a5f0f47eb337ed47e1c06f886b569bd": {
+    "build_id": "faker.unique.random_int(min=1, max=99999)",
+    "repository_id": "FK:repositories.repository_id",
+    "build_number": "faker.random_int(min=1, max=99999)",
+    "build_status": "faker.random_element(elements=('success', 'failure', 'pending', 'running', 'cancelled'))"
+  },
+  "deployments:18956d1528dc92edd2e1474aea2d98fdc7879c52b923c6f9f986f5616eaa9be7": {
+    "deployment_id": "faker.unique.random_int(min=1, max=99999)",
+    "build_id": "FK:builds.build_id",
+    "environment": "faker.random_element(elements=('dev', 'stg', 'prod'))",
+    "deployment_date": "faker.date_time_this_year().isoformat()"
+  },
+  "weapons:c3f43422891665a27ba1733cf5a09ca955b8876c860673d6793ab87e25d61ad7": {
+    "weapon_id": "faker.unique.random_int(min=1, max=99999)",
+    "weapon_name": "faker.word()",
+    "weapon_price": "faker.random_int(min=1, max=100000) / 100.0"
+  },
+  "organizations:5139090bef2873db7bba47a152687f1d2832b4c553194cacec3b82d182be894f": {
+    "org_id": "faker.unique.random_int(min=1, max=99999)",
+    "name": "faker.company()",
+    "billing_email": "faker.email()",
+    "created_at": "faker.date_time_this_year().isoformat()"
+  },
+  "users:a13aa23b85f2109f24be32aab8c3e6ae21dacc1eb3173a2ae5d73bc03081a8e5": {
+    "created_at": "faker.date_time_this_year().isoformat()",
+    "user_id": "faker.unique.random_int(min=1, max=99999)",
+    "username": "faker.user_name()",
+    "email": "faker.email()",
+    "avatar_url": "faker.image_url()"
+  },
+  "repositories:8b97fd53af82044632e1d86a035863da360d024409f5121507a2eafeacd5d6a2": {
+    "repo_id": "faker.unique.random_int(min=1, max=99999)",
+    "org_id": "FK:organizations.org_id",
+    "owner_id": "FK:users.user_id",
+    "name": "faker.word()",
+    "description": "faker.paragraph()",
+    "visibility": "faker.random_element(elements=('public', 'private', 'internal'))",
+    "default_branch": "faker.word()",
+    "created_at": "faker.date_time_this_year().isoformat()",
+    "updated_at": "faker.date_time_this_year().isoformat()"
+  },
+  "commits:20ceb18e607385f1134c2035f58b7da38bd6b944cf57616fc5f5e7ab05d41d0d": {
+    "commit_sha": "faker.sha256()",
+    "repo_id": "FK:repositories.repo_id",
+    "author_id": "FK:users.user_id",
+    "message": "faker.text()",
+    "authored_at": "faker.date_time_this_year().isoformat()"
+  },
+  "pull_requests:0d68bd811b89b12e0642ea4982f99f39418f022dce41c461c50be59ec2990ea9": {
+    "pr_id": "faker.unique.random_int(min=1, max=99999)",
+    "repo_id": "FK:repositories.repo_id",
+    "creator_id": "FK:users.user_id",
+    "title": "faker.catch_phrase()",
+    "pr_status": "faker.random_element(elements=('open', 'closed', 'merged', 'draft'))",
+    "source_branch": "faker.word()",
+    "target_branch": "faker.word()",
+    "created_at": "faker.date_time_this_year().isoformat()",
+    "updated_at": "faker.date_time_this_year().isoformat()"
+  },
+  "repository_collaborators:5d4d4f414ba2e1f5e71c24f6c6823d61b022dda5df3c5a66d1ce746ca6b3ce6c": {
+    "repo_id": "FK:repositories.repo_id",
+    "user_id": "FK:users.user_id",
+    "access_role": "faker.random_element(elements=('admin', 'maintainer', 'contributor', 'reader'))",
+    "granted_at": "faker.date_time_this_year().isoformat()"
+  },
+  "items:81cb3370a70a80af158e76e27adb88bf68a8d87791a7f41dfc84b97cb2447a84": {
+    "itemid": "faker.unique.random_int(min=1, max=99999)",
+    "item_name": "faker.word()",
+    "item_price": "faker.random_int(min=1, max=100000) / 100.0"
+  },
+  "shop:9d04ef5ae51c624298f0d0965b8da991a9bc6b26abacc7dec924f8ea6f10d0d2": {
+    "shop_id": "faker.unique.random_int(min=1, max=99999)",
+    "itemid": "FK:items.itemid",
+    "item_quantity": "faker.random_int(min=1, max=1000)",
+    "last_ordered_quantity": "faker.random_int(min=1, max=1000)"
+  }
+}
