@@ -31,7 +31,7 @@ app.add_middleware(
 
 class GenerateRequest(BaseModel):
     ddl: str = Field(..., min_length=1, max_length=50_000)
-    tables_config: dict = Field(default_factory=dict)
+    rows: int = Field(default=20, ge=1, le=10_000)
 
 class GenerateDDLRequest(BaseModel):
     prompt: str = Field(..., min_length=1, max_length=10_000)
@@ -43,7 +43,7 @@ def api_generate(req: GenerateRequest):
         schema = parse_ddl(req.ddl)
         column_map, tokens_used = get_or_build_column_map(schema)
         topo_order = build_order(schema)
-        generated = generate_data(schema, column_map, topo_order, tables_config=req.tables_config)
+        generated = generate_data(schema, column_map, topo_order, num_rows=req.rows)
         
         results = {
             "tables": [],

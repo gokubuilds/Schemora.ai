@@ -28,9 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Form inputs and UI elements
     const form = document.getElementById('generate-form');
     const ddlInput = document.getElementById('ddl-input');
-    const rowsDefault = document.getElementById('rows-default');
-    const perTableSection = document.getElementById('per-table-rows');
-    const perTableInputs = document.getElementById('per-table-inputs');
+    const rowsInput = document.getElementById('rows-input');
     const generateBtn = document.getElementById('generate-btn');
     const btnText = generateBtn.querySelector('.btn-text');
     const spinner = generateBtn.querySelector('.spinner');
@@ -52,45 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentData = null;
     let globalTokenCount = 0;
-
-    // ── Per-table row count helpers ──────────────────────────────────────────
-
-    // Lightweight regex — picks up most common DDL styles
-    function extractTableNames(ddl) {
-        const re = /CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?["'`]?(\w+)["'`]?\s*\(/gi;
-        const names = [];
-        let m;
-        while ((m = re.exec(ddl)) !== null) names.push(m[1]);
-        return names;
-    }
-
-    function renderPerTableInputs(tableNames) {
-        if (!tableNames.length) {
-            perTableSection.style.display = 'none';
-            return;
-        }
-        const defaultVal = parseInt(rowsDefault.value) || 20;
-        perTableInputs.innerHTML = tableNames.map(name => `
-            <div class="per-table-row">
-                <label for="rows-${name}">${name}</label>
-                <input type="number" id="rows-${name}" data-table="${name}"
-                       value="${defaultVal}" min="1" max="10000" class="per-table-input">
-            </div>
-        `).join('');
-        perTableSection.style.display = 'block';
-    }
-
-    // Re-render on DDL blur
-    ddlInput.addEventListener('blur', () => {
-        renderPerTableInputs(extractTableNames(ddlInput.value));
-    });
-
-    // Re-render (reset all to new default) when default value changes
-    rowsDefault.addEventListener('change', () => {
-        renderPerTableInputs(extractTableNames(ddlInput.value));
-    });
-
-    // ────────────────────────────────────────────────────────────────────────
 
     // Tab Switching Logic
     tabDdl.addEventListener('click', () => {
@@ -158,12 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
 
         const ddl = ddlInput.value.trim();
-        // Build tables_config from per-table inputs; fall back to global default
-        const defaultRows = parseInt(rowsDefault.value) || 20;
-        const tables_config = {};
-        document.querySelectorAll('.per-table-input').forEach(input => {
-            tables_config[input.dataset.table] = { rows: parseInt(input.value) || defaultRows };
-        });
+        const rows = parseInt(rowsInput.value);
 
         if (!ddl) return;
 
@@ -184,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(`${baseUrl}/api/generate`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ddl, tables_config })
+                body: JSON.stringify({ ddl, rows })
             });
 
             const data = await response.json();
@@ -355,6 +309,4 @@ document.addEventListener('DOMContentLoaded', () => {
             .replace(/"/g, "&quot;")
             .replace(/'/g, "&#039;");
     }
-
-    // DDL textarea has fixed height in CSS, no auto-resize needed
 });

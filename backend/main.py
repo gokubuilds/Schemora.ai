@@ -37,8 +37,7 @@ def run(ddl, rows, output):
     click.echo(f"    Order: {' -> '.join(topo_order)}")
     
     click.echo(f"[*] Generating {rows} rows per table...")
-    tables_config = {table: {"rows": rows} for table in topo_order}
-    generated = generate_data(schema, column_map, topo_order, tables_config=tables_config)
+    generated = generate_data(schema, column_map, topo_order, num_rows=rows)
     
     click.echo(f"[*] Exporting to SQL and CSV...")
     export_data(generated, topo_order, output)

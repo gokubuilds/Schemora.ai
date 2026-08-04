@@ -39,19 +39,15 @@ def build_order(schema: dict) -> list:
                         graph[n].pop()
                         break
 
-def safe_eval_faker(faker_instance: Faker, expr: str):
+def safe_eval_faker(faker_instance: Faker(locale='en_IN'), expr: str):
     """
-    Safely evaluates a faker expression string with complete edge-case fallback protections.
-    Prevents any unexpected syntax, non-existent method, or runtime call failure from breaking execution.
+    Safely evaluates a faker expression string like "faker.unique.random_int(min=1, max=99999)"
+    using Python's AST, avoiding the security risks of raw eval().
     """
-    if not isinstance(expr, str) or not expr.strip():
-        return faker_instance.word()
-
     try:
         tree = ast.parse(expr, mode='eval').body
-    except Exception:
-        # Fallback if LLM generates invalid expression syntax
-        return faker_instance.word()
+    except SyntaxError as e:
+        raise ValueError(f"Invalid faker expression from LLM: '{expr}'. Syntax error: {e}")
 
     def _eval(node):
         if isinstance(node, ast.Name):
@@ -63,45 +59,44 @@ def safe_eval_faker(faker_instance: Faker, expr: str):
                 return False
             if node.id in ('null', 'None'):
                 return None
-            return node.id
+            raise ValueError(f"Unknown name: {node.id}")
         elif isinstance(node, ast.Attribute):
             obj = _eval(node.value)
-            if not hasattr(obj, node.attr):
-                # Fall back to word() if LLM hallucinates a non-existent method (e.g., branch)
-                return getattr(faker_instance, "word")
             return getattr(obj, node.attr)
         elif isinstance(node, ast.Call):
             func = _eval(node.func)
             args = [_eval(a) for a in node.args]
             kwargs = {kw.arg: _eval(kw.value) for kw in node.keywords}
-            try:
-                if callable(func):
-                    return func(*args, **kwargs)
-                return faker_instance.word()
-            except Exception:
-                # Fallback if runtime execution of method fails
-                return faker_instance.word()
+            return func(*args, **kwargs)
         elif isinstance(node, ast.Constant):
             return node.value
         elif isinstance(node, ast.BinOp):
             left_val = _eval(node.left)
             right_val = _eval(node.right)
-            try:
-                if isinstance(node.op, ast.Add): return left_val + right_val
-                elif isinstance(node.op, ast.Sub): return left_val - right_val
-                elif isinstance(node.op, ast.Mult): return left_val * right_val
-                elif isinstance(node.op, ast.Div): return left_val / right_val if right_val != 0 else 1.0
-                elif isinstance(node.op, ast.Mod): return left_val % right_val if right_val != 0 else 1
-                elif isinstance(node.op, ast.Pow): return left_val ** right_val
-                elif isinstance(node.op, ast.FloorDiv): return left_val // right_val if right_val != 0 else 1
-            except Exception:
-                return left_val
-            return left_val
+            if isinstance(node.op, ast.Add):
+                return left_val + right_val
+            elif isinstance(node.op, ast.Sub):
+                return left_val - right_val
+            elif isinstance(node.op, ast.Mult):
+                return left_val * right_val
+            elif isinstance(node.op, ast.Div):
+                return left_val / right_val
+            elif isinstance(node.op, ast.Mod):
+                return left_val % right_val
+            elif isinstance(node.op, ast.Pow):
+                return left_val ** right_val
+            elif isinstance(node.op, ast.FloorDiv):
+                return left_val // right_val
+            else:
+                raise ValueError(f"Unsupported binary operator: {type(node.op)}")
         elif isinstance(node, ast.UnaryOp):
             val = _eval(node.operand)
-            if isinstance(node.op, ast.USub): return -val
-            elif isinstance(node.op, ast.UAdd): return +val
-            return val
+            if isinstance(node.op, ast.USub):
+                return -val
+            elif isinstance(node.op, ast.UAdd):
+                return +val
+            else:
+                raise ValueError(f"Unsupported unary operator: {type(node.op)}")
         elif isinstance(node, ast.Tuple):
             return tuple(_eval(el) for el in node.elts)
         elif isinstance(node, ast.List):
@@ -109,24 +104,19 @@ def safe_eval_faker(faker_instance: Faker, expr: str):
         elif isinstance(node, ast.Dict):
             return {_eval(k): _eval(v) for k, v in zip(node.keys, node.values)}
         else:
-            return faker_instance.word()
+            raise ValueError(f"Unsupported AST node: {type(node)}")
 
     try:
         return _eval(tree)
-    except Exception:
-        return faker_instance.word()
+    except Exception as e:
+        raise ValueError(f"Failed to evaluate faker expression '{expr}': {e}")
 
-def generate_data(schema: dict, column_map: dict, topo_order: list, tables_config: dict = None) -> dict:
+def generate_data(schema: dict, column_map: dict, topo_order: list, num_rows: int = 20) -> dict:
     """
     Generates mock data for all tables in the correct order,
     resolving foreign keys to actual generated values.
-
-    tables_config: optional dict mapping table name -> {"rows": N}.
-    Any table not listed defaults to 20 rows.
     """
     faker = Faker()
-    if tables_config is None:
-        tables_config = {}
     generated = {}  # table_name -> list of row dicts
 
     # Initialize all tables in generated so self-references can append incrementally
@@ -134,7 +124,6 @@ def generate_data(schema: dict, column_map: dict, topo_order: list, tables_confi
         generated[table] = []
 
     for table in topo_order:
-        num_rows = tables_config.get(table, {}).get("rows", 20)
         for _ in range(num_rows):
             row = {}
             for col, faker_expr in column_map.get(table, {}).items():

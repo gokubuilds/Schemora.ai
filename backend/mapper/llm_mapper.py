@@ -3,6 +3,8 @@ import json
 import logging
 import groq
 
+
+
 logger = logging.getLogger(__name__)
 
 CACHE_FILE = "mapper_cache.json"
@@ -20,8 +22,6 @@ Rules:
 - Primary key columns: use `faker.unique.random_int(min=1, max=99999)`
 - Foreign key columns: use the placeholder `FK:{{ref_table}}.{{ref_column}}` — do NOT generate a value
 - Infer meaning from column names even if abbreviated (e.g., u_nm = username, addr = address, dob = date of birth)
-- For branch/git branch columns: use `faker.slug()` or `faker.word()` (do NOT use `faker.branch()`)
-- Ensure all generated methods exist on Python Faker (e.g. `user_name()`, `email()`, `word()`, `slug()`, `catch_phrase()`, `date_time_this_year()`)
 - Return ONLY a valid JSON object mapping column name to a Faker call string. No explanation.
 
 Example output:

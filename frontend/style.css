@@ -482,7 +482,6 @@ body {
     border-right: 1px solid var(--border-color);
     background: var(--bg-card);
     padding: 1.5rem;
-    overflow-y: auto;
 }
 
 .console-right {
@@ -498,6 +497,7 @@ body {
 #generate-form {
     display: flex;
     flex-direction: column;
+    height: 100%;
 }
 
 .console-tabs {
@@ -537,7 +537,6 @@ body {
     flex-direction: column;
     gap: 0.5rem;
     height: 340px;
-    flex-shrink: 0;
     margin-bottom: 1.5rem;
 }
 
@@ -545,7 +544,6 @@ body {
     width: 100%;
     height: 100%;
     resize: none;
-    overflow-y: auto;
     border: 1px solid var(--border-color);
     border-radius: 10px;
     background: var(--bg-input);
@@ -561,12 +559,6 @@ body {
 .console-group textarea:focus {
     border-color: var(--accent);
     box-shadow: 0 0 0 3px var(--accent-bg);
-}
-
-/* NLP prompt textarea: fixed height, no auto-resize */
-#nlp-input {
-    height: 260px;
-    resize: none;
 }
 
 .console-footer-row {
@@ -975,51 +967,4 @@ body {
     .console-right {
         height: 600px;
     }
-}
-
-/* ── Per-table row count panel ────────────────────────────────────────────── */
-.per-table-label {
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 0.5rem;
-}
-
-.per-table-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-    padding: 0.25rem 0;
-}
-
-.per-table-row label {
-    flex: 1;
-    font-size: 0.8rem;
-    font-family: var(--font-mono);
-    color: var(--text-secondary);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.per-table-input {
-    width: 72px;
-    flex-shrink: 0;
-    padding: 0.2rem 0.4rem;
-    font-size: 0.8rem;
-    font-family: var(--font-mono);
-    background: var(--bg-input);
-    border: 1px solid var(--border-dark);
-    border-radius: 4px;
-    color: var(--text-primary);
-    text-align: right;
-    outline: none;
-    transition: border-color 0.15s;
-}
-
-.per-table-input:focus {
-    border-color: var(--accent);
 }
