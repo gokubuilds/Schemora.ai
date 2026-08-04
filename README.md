@@ -83,7 +83,7 @@ python -m backend.main --ddl schemas/sample.sql --rows 50 --output ./output
 ## Project Structure
 
 ```text
-schema-aware-generator/
+Schemora.ai/
 ├── project/
 │   ├── backend/
 │   │   ├── parser/                # SQL DDL parsing
