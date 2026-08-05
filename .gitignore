@@ -1,10 +1,14 @@
 # Python
 __pycache__/
 *.py[cod]
+*$py.class
 
-
-
-
+# Environments
+.env
+.env.*
+.venv/
+venv/
+env/
 
 # Node
 node_modules/
@@ -12,4 +16,3 @@ node_modules/
 # App-specific
 mapper_cache.json
 demo
-
