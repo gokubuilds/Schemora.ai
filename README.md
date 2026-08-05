@@ -12,52 +12,7 @@ An intelligent, schema-aware test data generation tool that utilizes Large Langu
 
 ## Architecture
 
-```mermaid
-flowchart TD
-    %% Colors and Styles
-    classDef client fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b;
-    classDef core fill:#efebe9,stroke:#5d4037,stroke-width:2px,color:#3e2723;
-    classDef service fill:#ede7f6,stroke:#5e35b1,stroke-width:2px,color:#4a148c;
-    classDef storage fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20;
-
-    subgraph Client ["Client Interfaces"]
-        UI["💻 Web UI (HTML/CSS/JS)"]:::client
-        CLI["📟 CLI Tool (main.py)"]:::client
-    end
-
-    subgraph App ["Schemora.ai Core Engine"]
-        Parser["📝 SQL DDL Parser"]:::core
-        Sorter["🔄 Topological Sorter (Dependency Resolver)"]:::core
-        Mapper["🧠 LLM Data Mapper (Column Semantic Mapping)"]:::core
-        Generator["⚡ Synthetic Data Generator (Faker)"]:::core
-        Exporter["💾 Data Exporter"]:::core
-    end
-
-    subgraph External ["External Services & Cache"]
-        Groq["🤖 Groq API (Llama 3.1 70B)"]:::service
-        Cache["📁 Cache (mapper_cache.json)"]:::storage
-    end
-
-    subgraph Output ["Target Outputs"]
-        SQL["📄 seed_all.sql"]:::storage
-        CSV["📊 CSV Dumps"]:::storage
-    end
-
-    %% User / CLI Input Flow
-    UI -->|1. Submit SQL DDL or Natural Language| Parser
-    CLI -->|1. Provide SQL DDL File| Parser
-    UI <-->|Translate NLP to SQL DDL| Groq
-
-    %% Core Pipeline Flow
-    Parser -->|2. Abstract Syntax Tree & Constraints| Sorter
-    Sorter -->|3. Sorted Table Evaluation Order| Mapper
-    Mapper <-->|4. Fetch/Save Mappings| Cache
-    Mapper <-->|4. Query Column Semantics| Groq
-    Mapper -->|5. Match Columns to Faker Providers| Generator
-    Generator -->|6. Generate Synthesized Row Data| Exporter
-    Exporter -->|7. Export Formatted SQL Seeds| SQL
-    Exporter -->|7. Export Formatted CSVs| CSV
-```
+![Architecture Diagram](project/frontend/assets/architectute.png)
 
 - **Backend:** Python 3, FastAPI, Click (for CLI)
 - **Frontend:** Vanilla HTML5, CSS3, JavaScript
